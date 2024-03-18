@@ -18,25 +18,30 @@ def main():
     
 
     subreddit = reddit.subreddit("AskReddit")
-    for submission in subreddit.stream.submissions():
-        process_submission(submission)
+    for comment in subreddit.stream.comments():
+        process_comment(comment)
 
 
-def process_submission(submission):
-    # Ignore titles with more than 10 words as they probably are not simple questions.
-    if len(submission.title.split()) > 10:
-        return
+def process_comment(comment):
+    verified_link = identify_link(comment)
 
-    normalized_title = submission.title.lower()
-    for question_phrase in QUESTIONS:
-        if question_phrase in normalized_title:
-            url_title = quote_plus(submission.title)
-            reply_text = REPLY_TEMPLATE.format(url_title)
-            print(f"Replying to: {submission.title}")
-            submission.reply(reply_text)
-            # A reply has been made so do not attempt to match other phrases.
-            break
+    if verified_link:
+        summerized_text = summerize_link(verified_link)
 
+    return
+
+def identify_link(comment):
+    #link identified or false.
+    return 
+
+def summerize_link(link):
+    #summerized text of the link.
+    return 
+
+def bot_commenting(summerized_link_text):
+    ## posting a new comment with the summerized text
+    ## comment.reply()
+    return
 
 if __name__ == "__main__":
     main()
