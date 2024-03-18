@@ -1,11 +1,6 @@
-#!/usr/bin/env python3
-from urllib.parse import quote_plus
-
 import praw
 import os
-
-QUESTIONS = ["what is", "who is", "what are"]
-REPLY_TEMPLATE = "[Let me google that for you](https://lmgtfy.com/?q={})"
+import re
 
 
 def main():
@@ -23,7 +18,7 @@ def main():
 
 
 def process_comment(comment):
-    verified_link = identify_link(comment)
+    verified_link = identify_link(comment.body)
 
     if verified_link:
         summerized_text = summerize_link(verified_link)
@@ -31,10 +26,12 @@ def process_comment(comment):
     return
 
 def identify_link(comment):
-    #link identified or false.
-    return 
+    regex = r"(?i)\b((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'\".,<>?«»“”‘’]))"
+    url = re.findall(regex, comment)
+    return [x[0] for x in url] if len(url) else False
 
 def summerize_link(link):
+    #iterate over links
     #summerized text of the link.
     return 
 
