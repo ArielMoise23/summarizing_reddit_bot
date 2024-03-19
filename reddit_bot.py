@@ -23,16 +23,17 @@ def main():
 
 
 def process_comment(comment):
-    verified_link = identify_link(comment.body)
+    verified_links = identify_link(comment.body)
 
-    if verified_link:
-        # handle multiples links
-        print('link verified')
-        summerized_text = summerize_link(verified_link[0])
-        commented = bot_commenting(summerized_text, verified_link[0], comment)
-        return "summarized commented" if commented else "failed to comment"
+    if not verified_links:
+        return "no links in comment"
 
-    return "no link"
+    summerized_text = []
+    for link in verified_links: 
+        print('link verified ' + link)
+        summerized_text.append(summerize_link(link))
+    commented = bot_commenting(summerized_text, verified_links, comment)
+    return "summarized commented" if commented else "failed to comment"
 
 def identify_link(comment):
     regex = r"(?i)\b((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'\".,<>?«»“”‘’]))"
@@ -42,19 +43,15 @@ def identify_link(comment):
     return [x[0] for x in url] if len(url) else False
 
 def scrap_website(link):
-    ## need to identify the type of website article or offical
     downloaded = trafilatura.fetch_url(link)
     a = trafilatura.extract(downloaded)
     return a
 
 def summerize_link(link):
-    #iterate over links
     website_text = scrap_website(link)
 
     # Parse the input text
     parser = PlaintextParser.from_string(website_text, Tokenizer("english"))
-
-    # Create an LSA summarizer
     summarizer = LsaSummarizer()
 
     # Generate the summary
@@ -66,19 +63,18 @@ def summerize_link(link):
 
     return '\n'.join(summary_list)
 
-def bot_commenting(summerized_link_text, link, comment):
-    ## posting a new comment with the summerized text
-    ## comment.reply()
-
-    message_text = f"""hello, im a summarizer bot. i recognized a link in your comment - {link} and summarized it for you comfort (:
-        summary - 
-        {summerized_link_text}
-    """
+def bot_commenting(summerized_link_texts, links, comment):
     comment_locked = comment.locked
-    if not comment_locked:
-        response = comment.reply(message_text)
+    if comment_locked:
+        return False
 
-    return comment_locked
+    message_text = f"""hello, im a summarizer bot. i recognized a links in your comment - {'\n'.join(links)} and summarized it for you comfort (:
+        summary - 
+        {'\n'.join(summerized_link_texts)}
+    """
+    response = comment.reply(message_text)
+
+    return True
 
 if __name__ == "__main__":
     main()
