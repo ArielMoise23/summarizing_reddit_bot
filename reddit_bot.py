@@ -2,11 +2,10 @@ import praw
 import os
 import re
 
-import requests
-from bs4 import BeautifulSoup
 from sumy.parsers.plaintext import PlaintextParser
 from sumy.nlp.tokenizers import Tokenizer
 from sumy.summarizers.lsa import LsaSummarizer
+import trafilatura
 
 
 def main():
@@ -42,16 +41,15 @@ def identify_link(comment):
         return False
     return [x[0] for x in url] if len(url) else False
 
-def scrap_info(link):
-    # scraps text of website
+def scrap_website(link):
     ## need to identify the type of website article or offical
-    r = requests.get(link)
-    soup = BeautifulSoup(r.content, 'html.parser')
-    return soup.text.replace("\n", "")
+    downloaded = trafilatura.fetch_url(link)
+    a = trafilatura.extract(downloaded)
+    return a
 
 def summerize_link(link):
     #iterate over links
-    website_text = scrap_info(link)
+    website_text = scrap_website(link)
 
     # Parse the input text
     parser = PlaintextParser.from_string(website_text, Tokenizer("english"))
