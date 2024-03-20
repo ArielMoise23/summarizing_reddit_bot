@@ -17,7 +17,7 @@ def main():
                      username=os.environ['REDDIT_USERNAME'])
     
 
-    subreddit = reddit.subreddit("AskReddit")
+    subreddit = reddit.subreddit(os.environ['SUBREDDIT'])
     for comment in subreddit.stream.comments():
         process_comment(comment)
 
@@ -31,8 +31,9 @@ def process_comment(comment):
     summerized_text = []
     for link in verified_links: 
         print('link verified ' + link)
-        summerized_text.append(summerize_link(link))
-    commented = bot_commenting(summerized_text, verified_links, comment)
+        text = summerize_link(link)
+        summerized_text.append(summerize_link(link)) if text else None
+    commented = bot_commenting(summerized_text, verified_links, comment) if len(summerized_text) else None
     return "summarized commented" if commented else "failed to comment"
 
 def identify_link(comment):
@@ -48,7 +49,11 @@ def scrap_website(link):
     return a
 
 def summerize_link(link):
-    website_text = scrap_website(link)
+    try:
+        website_text = scrap_website(link)
+    except:
+        print("Error scraping website")
+        return False
 
     # Parse the input text
     parser = PlaintextParser.from_string(website_text, Tokenizer("english"))
@@ -68,13 +73,16 @@ def bot_commenting(summerized_link_texts, links, comment):
     if comment_locked:
         return False
 
-    message_text = f"""hello, im a summarizer bot. i recognized a links in your comment - {'\n'.join(links)} and summarized it for you comfort (:
+    message_text = f"""hello, im a summarizer bot. i recognized links in your comment - {'\n'.join(links)} and summarized it for you comfort (:
         summary - 
         {'\n'.join(summerized_link_texts)}
     """
-    response = comment.reply(message_text)
+    try:
+        # comment.reply(message_text)
+        return True
+    except:
+        return False
 
-    return True
 
 if __name__ == "__main__":
     main()
