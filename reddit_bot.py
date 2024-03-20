@@ -78,7 +78,7 @@ def bot_commenting(summerized_link_texts, links, comment):
         {'\n'.join(summerized_link_texts)}
     """
     try:
-        # comment.reply(message_text)
+        comment.reply(message_text)
         return True
     except:
         return False
