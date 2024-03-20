@@ -7,13 +7,13 @@ Summarizer Reddit Bot is a bot that identifies links in comments and then scrap 
 - create virtualenv
 - pip install -r requierements.txt
 - run in cmd - python -c "import nltk; nltk.download('punkt')"
-- creat env variables [REDDIT_USERNAME
-REDDIT_PASSWORD
-REDDIT_CLIENT_ID
-REDDIT_CLIENT_SECRET
-REDDIT_USER_AGENT
+- creat env variables [REDDIT_USERNAME, 
+REDDIT_PASSWORD, 
+REDDIT_CLIENT_ID, 
+REDDIT_CLIENT_SECRET, 
+REDDIT_USER_AGENT, 
 SUBREDDIT
-]
+] (according to your data and created app in reddit)
 
 - run reddit_bot.py
 
